@@ -1,13 +1,20 @@
-FROM python:3.10
+FROM python:3.10 AS builder
+
 
 WORKDIR /app
 COPY . /app/
 
+RUN --mount=type=cache,target=/root/.cache/pip pip install -U poetry==1.3.2
+
+RUN --mount=type=cache,target=/root/.cache/pip poetry install --only main
+
+FROM python:3.10-alpine
+
 EXPOSE 8000
 
-RUN pip install -U poetry==1.3.2
-RUN poetry --version
-RUN poetry config virtualenvs.create false
-RUN poetry install
+WORKDIR /app
+COPY ./ucb-tester /app/ucb-tester
+COPY --from=builder /app/.venv /app/.venv
+ENV PATH=/app/.venv/bin:$PATH
 
-CMD ["poetry", "run", "uvicorn", "ucb-tester.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "ucb-tester.main:app", "--host", "0.0.0.0", "--port", "8000"]
