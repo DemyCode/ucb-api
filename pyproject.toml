@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "ucb-tester"
+version = "0.1.0"
+description = ""
+authors = ["DemyCode <verycols@gmail.com>"]
+readme = "README.md"
+packages = [{include = "ucb-tester"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.24.1"
+pandas = "^1.5.3"
+fastapi = "^0.89.1"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+black = {version = "^23.1a1", allow-prereleases = true}
+pre-commit = "^3.0.0"
+
+[tool.black]
+line-length = 88
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
