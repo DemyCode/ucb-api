@@ -1,20 +1,19 @@
 FROM python:3.10 AS builder
 
 
-WORKDIR /app
-COPY . /app/
+EXPOSE 8000
+WORKDIR /ucb-api
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install -U poetry==1.3.2
+COPY . /ucb-api
 
-RUN --mount=type=cache,target=/root/.cache/pip poetry install --only main
+RUN pip install -U poetry==1.3.2
+RUN poetry install --only main
 
 FROM python:3.10-alpine
 
-EXPOSE 8000
+WORKDIR /ucb-api
+COPY . /ucb-api
+COPY --from=builder /ucb-api/.venv /ucb-api/.venv
+ENV PATH=/ucb-api/.venv/bin:$PATH
 
-WORKDIR /app
-COPY ./ucb-tester /app/ucb-tester
-COPY --from=builder /app/.venv /app/.venv
-ENV PATH=/app/.venv/bin:$PATH
-
-CMD ["uvicorn", "ucb-tester.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

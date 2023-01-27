@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "ucb-tester"
+name = "ucb-api"
 version = "0.1.0"
 description = ""
 authors = ["DemyCode <verycols@gmail.com>"]
 readme = "README.md"
-packages = [{include = "ucb-tester"}]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
