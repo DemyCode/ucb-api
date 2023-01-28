@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     DATABASE_URI: Optional[PostgresDsn] = None
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
+    UPDATE_ALEMBIC: bool = True
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

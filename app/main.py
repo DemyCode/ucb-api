@@ -1,19 +1,16 @@
-from typing import Optional
 import uvicorn
 from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel
 from loguru import logger
 import alembic.command
 import alembic.config
 
 from app.models import User
-from app.db import get_session, init_db
+from app.db import engine
 from app.config import settings
-
-settings = settings()
 
 app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
@@ -44,27 +41,19 @@ if settings.UPDATE_ALEMBIC:
 
 
 @app.on_event("startup")
-def on_startup():
-    init_db()
+def startup():
+    SQLModel.metadata.create_all(engine)
 
 
 @app.post("/token")
-async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    session: Session = Depends(get_session),
-):
-    user = session.get(User, form_data.username)
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-
-    def fake_hash_password(password: str):
-        return "fakehashed" + password
-
-    hashed_password = fake_hash_password(form_data.password)
-    if not hashed_password == user.hashed_password:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-
-    return {"access_token": user.username, "token_type": "bearer"}
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    with Session(engine) as session:
+        user = session.get(User, form_data.username)
+        if not user:
+            raise HTTPException(
+                status_code=400, detail="Incorrect username or password"
+            )
+        return {"access_token": user.username, "token_type": "bearer"}
 
 
 if __name__ == "__main__":
