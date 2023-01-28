@@ -2,10 +2,8 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    app_name: str = "UCB API"
-
-    class Config:
-        env_file = ".env"
+    APP_NAME: str = "UCB API"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/ucb"
 
 
 def get_settings():
