@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from pydantic import (
     AnyHttpUrl,
@@ -11,12 +11,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "ucb-api"
     API_V1_STR: str = "/api/v1"
 
-    POSTGRES_HOST: str = "localhost"
-    POSTGRES_PORT: str = "5432"
-    POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
-    POSTGRES_DB: str = "postgres"
-    DATABASE_URI: Optional[PostgresDsn] = None
+    DATABASE_URL: PostgresDsn = "postgresql://postgres:postgres@localhost:5432/postgres"
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
     UPDATE_ALEMBIC: bool = True
