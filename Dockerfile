@@ -1,12 +1,11 @@
 FROM python:3.10 AS builder
 
-
 EXPOSE 8000
 WORKDIR /ucb-api
 
-COPY ./poetry.lock poetry.toml pyproject.toml /ucb-api/
-
 RUN pip install -U poetry==1.3.2
+
+COPY ./poetry.lock poetry.toml pyproject.toml /ucb-api/
 RUN poetry install --only main
 
 FROM python:3.10-alpine
