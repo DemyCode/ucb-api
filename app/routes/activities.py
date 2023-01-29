@@ -1,7 +1,9 @@
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
-from app.models import Activity
+
 from app.db import get_session
+from app.models import Activity
 
 router = APIRouter(
     prefix="/activities",
@@ -17,9 +19,7 @@ async def read_activities(response_model=List[Activity], session=Depends(get_ses
 
 
 @router.post("/")
-async def create_activity(
-    activity: Activity, session=Depends(get_session), response_model=Activity
-):
+async def create_activity(activity: Activity, session=Depends(get_session), response_model=Activity):
     session.add(activity)
     session.commit()
     session.refresh(activity)
@@ -27,9 +27,7 @@ async def create_activity(
 
 
 @router.get("/{activity_id}")
-async def read_activity(
-    activity_id: int, session=Depends(get_session), response_model=Activity
-):
+async def read_activity(activity_id: int, session=Depends(get_session), response_model=Activity):
     activity = session.get(Activity, activity_id)
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")

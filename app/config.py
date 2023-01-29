@@ -1,10 +1,6 @@
 from typing import List
 
-from pydantic import (
-    AnyHttpUrl,
-    BaseSettings,
-    PostgresDsn,
-)
+from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn
 
 
 class Settings(BaseSettings):

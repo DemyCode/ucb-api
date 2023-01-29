@@ -1,20 +1,19 @@
-import uvicorn
 from pathlib import Path
-from fastapi import FastAPI, Depends, HTTPException
+
+import uvicorn
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session, SQLModel
 from loguru import logger
+from sqlmodel import Session, SQLModel
+
 import alembic.command
 import alembic.config
-
-from app.models import User
-from app.db import engine
 from app.config import settings
+from app.db import engine
+from app.models import User
 
-app = FastAPI(
-    title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
-)
+app = FastAPI(title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json")
 
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
@@ -50,9 +49,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     with Session(engine) as session:
         user = session.get(User, form_data.username)
         if not user:
-            raise HTTPException(
-                status_code=400, detail="Incorrect username or password"
-            )
+            raise HTTPException(status_code=400, detail="Incorrect username or password")
         return {"access_token": user.username, "token_type": "bearer"}
 
 
