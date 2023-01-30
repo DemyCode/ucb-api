@@ -3,6 +3,9 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
+from loguru import logger
+import alembic.config
+import alembic.command
 
 from app.config import settings
 from app.db import engine
@@ -19,6 +22,16 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+if settings.UPDATE_ALEMBIC:
+
+    @app.on_event("startup")
+    async def alembic_upgrade():
+        logger.info("Attempting to upgrade alembic on startup")
+        alembic_cfg = alembic.config.Config("alembic.ini")
+        alembic_cfg.set_main_option("sqlalchemy.url", str(settings.DATABASE_URL))
+        alembic.command.upgrade(alembic_cfg, "head")
+        logger.info("Successfully upgraded alembic on startup")
 
 
 @app.get("/ping")
