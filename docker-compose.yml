@@ -1,15 +1,25 @@
 version: "3.9"
 services:
   api:
-    image: ucb-api
     build: .
+    command: "uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --workers 1"
+    # volumes:
+    #   - .:/ucb-api
     ports:
       - "8000:8000"
-    command: "uvicorn app.main:app --host 0.0.0.0 --port 8000"
-  postgresql:
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/foo
+    depends_on:
+      - db
+      - minio
+  db:
     image: postgres
-    ports:
-      - "5432:5432"
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
   minio:
     image: minio/minio
     ports:

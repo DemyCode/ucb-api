@@ -8,7 +8,9 @@ RUN pip install -U poetry==1.3.2
 COPY ./poetry.lock poetry.toml pyproject.toml /ucb-api/
 RUN poetry install --only main
 
-FROM python:3.10-alpine
+FROM python:3.10-slim
+
+RUN apt update && apt install -y libpq-dev
 
 WORKDIR /ucb-api
 COPY . /ucb-api

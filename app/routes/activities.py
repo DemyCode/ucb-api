@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 @router.get("/")
-async def read_activities(response_model=List[Activity], session=Depends(get_session)):
+async def read_activities(session=Depends(get_session), response_model=List[Activity]):
     return session.exec(Activity.select()).all()
 
 

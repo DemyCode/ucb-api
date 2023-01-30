@@ -1,17 +1,13 @@
-from pathlib import Path
-
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
-from loguru import logger
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session
 
-import alembic.command
-import alembic.config
 from app.config import settings
 from app.db import engine
 from app.models import User
+from app.routes import activities
 
 app = FastAPI(title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json")
 
@@ -24,24 +20,10 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-if settings.UPDATE_ALEMBIC:
 
-    @app.on_event("startup")
-    def alembic_upgrade():
-        logger.info("Attempting to upgrade alembic on startup")
-        try:
-            alembic_ini_path = Path(__file__).parent / "alembic.ini"
-            alembic_cfg = alembic.config.Config(str(alembic_ini_path))
-            alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URI)
-            alembic.command.upgrade(alembic_cfg, "head")
-            logger.info("Successfully upgraded alembic on startup")
-        except Exception:
-            logger.exception("Alembic upgrade failed on startup")
-
-
-@app.on_event("startup")
-def startup():
-    SQLModel.metadata.create_all(engine)
+@app.get("/ping")
+async def pong():
+    return {"ping": "pong!"}
 
 
 @app.post("/token")
@@ -52,6 +34,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             raise HTTPException(status_code=400, detail="Incorrect username or password")
         return {"access_token": user.username, "token_type": "bearer"}
 
+
+app.include_router(activities.router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
