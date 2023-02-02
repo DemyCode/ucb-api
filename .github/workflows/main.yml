@@ -21,8 +21,7 @@ jobs:
 
       - name: Prepare Environement
         shell: bash
-        run:
-          pip install -U pip
+        run: pip install -U pip
           pip install poetry
           poetry config --local
           poetry --version
@@ -34,3 +33,13 @@ jobs:
       - name: Run tests
         shell: bash
         run: poetry run coverage run -m pytest
+
+      - name: Create html coverage report
+        shell: bash
+        run: poetry run coverage html
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./htmlcov
