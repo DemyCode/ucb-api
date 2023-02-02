@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "ucb-api"
     API_V1_STR: str = "/api/v1"
 
-    DATABASE_URL: PostgresDsn = "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
+    DATABASE_URL: PostgresDsn = PostgresDsn("postgresql+asyncpg://postgres:postgres@db:5432/postgres")
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
     UPDATE_ALEMBIC: bool = False

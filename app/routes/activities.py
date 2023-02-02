@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from app.db import get_session
 from app.models import Activity
-from sqlalchemy.future import select
 
 router = APIRouter(
     prefix="/activities",
@@ -15,10 +15,8 @@ router = APIRouter(
 @router.get("/")
 async def read_activities(
     session: AsyncSession = Depends(get_session),
-    # response_model=List[Activity],
 ):
     return await session.execute(select(Activity))
-    # return result
 
 
 # @router.post("/")

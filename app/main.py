@@ -2,11 +2,11 @@ import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session
 from loguru import logger
-import alembic.config
-import alembic.command
+from sqlmodel import Session
 
+import alembic.command
+import alembic.config
 from app.config import settings
 from app.db import engine
 from app.models import User
@@ -39,13 +39,13 @@ async def pong():
     return {"ping": "pong!"}
 
 
-@app.post("/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    with Session(engine) as session:
-        user = session.get(User, form_data.username)
-        if not user:
-            raise HTTPException(status_code=400, detail="Incorrect username or password")
-        return {"access_token": user.username, "token_type": "bearer"}
+# @app.post("/token")
+# async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+#     with Session(engine) as session:
+#         user = session.get(User, form_data.username)
+#         if not user:
+#             raise HTTPException(status_code=400, detail="Incorrect username or password")
+#         return {"access_token": user.username, "token_type": "bearer"}
 
 
 app.include_router(activities.router)
