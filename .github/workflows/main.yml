@@ -8,6 +8,9 @@ on:
     branches:
       - master
 
+concurrency:
+  group: ${{ github.ref }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
