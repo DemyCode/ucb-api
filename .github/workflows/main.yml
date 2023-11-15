@@ -1,0 +1,59 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Prepare Environement
+        shell: bash
+        run: |
+          pip install -U pip
+          pip install poetry
+          poetry config --local
+          poetry --version
+
+      - name: Install dependencies
+        shell: bash
+        run: poetry install
+
+      - name: Coverage reports
+        shell: bash
+        run: poetry run coverage run -m pytest
+
+      - name: Create html coverage report
+        shell: bash
+        run: poetry run coverage html
+
+      - name: Commit report
+        run: |
+          git checkout gh-pages
+          git config --global user.name 'Your Name'
+          git config --global user.email 'your-username@users.noreply.github.com'
+          git add ./htmlcov
+          git commit -m "Update coverage report"
+          git push
+
+      # - name: Deploy
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   if: github.ref == 'refs/heads/master'
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./htmlcov
